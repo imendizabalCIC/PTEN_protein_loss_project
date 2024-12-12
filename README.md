@@ -24,8 +24,6 @@ Analysis of the bulk RNA-seq data for Human and Mice are inside the folder **"Bu
    - **xCell**-based deconvolution analysis of bulk RNA-seq data to infer 64 distinct cell types in clinical samples.
 
 
-Scripts for the analysis of single cell are inside the **"Single-cell"** folder, where:
-
 The analysis scripts for single-cell RNA-seq data are located in the "Single-cell" folder, organized as follows:
 
 1. **"0-2_scPipeline_*"**
