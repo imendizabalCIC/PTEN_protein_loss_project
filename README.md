@@ -22,3 +22,19 @@ Analysis of the bulk RNA-seq data for Human and Mice are inside the folder **"Bu
 
 5. **"5_Celltype_xCell.R"** (Human)  
    - **xCell**-based deconvolution analysis of bulk RNA-seq data to infer 64 distinct cell types in clinical samples.
+
+
+Scripts for the analysis of single cell are inside the **"Single-cell"** folder, where:
+
+The analysis scripts for single-cell RNA-seq data are located in the "Single-cell" folder, organized as follows:
+
+1. **"0-2_scPipeline_*"**
+   - Preprocessing, integration, and marker identification of 8 localized prostate cancer samples from Chen et al. (Nature, 2021) using the Seurat package.
+
+2. **"3_sc_UCell_Modules_Human_Mouse.R"**
+   - Projection of the differentially expressed genes from green and purple modules (human analysis) and the yellow module (mouse dataset) using the UCell package.
+
+3. **"4_sc_MuSiC"**
+   - Prostate-specific cell type deconvolution analysis of clinical and murine data, leveraging single-cell data from 8 localized prostate cancer samples from Chen et al. (Nature, 2021) using the MuSiC package.
+
+For details on package versions, please refer to the manuscript.
