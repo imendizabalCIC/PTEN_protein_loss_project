@@ -34,7 +34,7 @@ The analysis scripts for single-cell RNA-seq data are located in the "Single-cel
 2. **"3_sc_UCell_Modules_Human_Mouse.R"**
    - Projection of the differentially expressed genes from green and purple modules (human analysis) and the yellow module (mouse dataset) using the UCell package.
 
-3. **"4_sc_MuSiC"**
+3. **"4_sc_MuSiC.R"**
    - Prostate-specific cell type deconvolution analysis of clinical and murine data, leveraging single-cell data from 8 localized prostate cancer samples from Chen et al. (Nature, 2021) using the MuSiC package.
 
 For details on package versions, please refer to the manuscript.
