@@ -14,7 +14,7 @@ Analysis of the bulk RNA-seq data for Human and Mice are inside the folder **"Bu
    - Characterization of PTEN protein loss samples based on activation of the PI3K-AKT-mTOR pathway.
 
 3. **"3_Data_Analysis_*"**  
-   - Differential expression analysis of PTEN protein loss versus presence using **Limma Voom** packe.  
+   - Differential expression analysis of PTEN protein loss versus presence using **Limma Voom** package.  
    - Network analysis implementation with **WGCNA**.
 
 4. **"4_Enrichment_*"**  
