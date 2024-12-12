@@ -14,7 +14,7 @@ Analysis of the bulk RNA-seq data for Human and Mice are inside the folder **"Bu
    - Characterization of PTEN protein loss samples based on activation of the PI3K-AKT-mTOR pathway.
 
 3. **"3_Data_Analysis_*"**  
-   - Differential expression analysis of PTEN protein loss versus presence using **Limma Voom**.  
+   - Differential expression analysis of PTEN protein loss versus presence using **Limma Voom** packe.  
    - Network analysis implementation with **WGCNA**.
 
 4. **"4_Enrichment_*"**  
@@ -29,12 +29,12 @@ Scripts for the analysis of single cell are inside the **"Single-cell"** folder,
 The analysis scripts for single-cell RNA-seq data are located in the "Single-cell" folder, organized as follows:
 
 1. **"0-2_scPipeline_*"**
-   - Preprocessing, integration, and marker identification of 8 localized prostate cancer samples from Chen et al. (Nature, 2021) using the Seurat package.
+   - Preprocessing, integration, and marker identification of a single-cell data of 8 localized prostate cancer samples from Chen et al. (Nature, 2021) using the **Seurat** package.
 
 2. **"3_sc_UCell_Modules_Human_Mouse.R"**
-   - Projection of the differentially expressed genes from green and purple modules (human analysis) and the yellow module (mouse dataset) using the UCell package.
+   - Projection of the differentially expressed genes from green and purple modules (human analysis) and the yellow module (mouse dataset) using the **UCell** package.
 
 3. **"4_sc_MuSiC.R"**
-   - Prostate-specific cell type deconvolution analysis of clinical and murine data, leveraging single-cell data from 8 localized prostate cancer samples from Chen et al. (Nature, 2021) using the MuSiC package.
+   - Prostate-specific cell type deconvolution analysis of the clinical and murine data with a single-cell data from 8 localized prostate cancer samples from Chen et al. (Nature, 2021) using the **MuSiC** package.
 
 For details on package versions, please refer to the manuscript.
