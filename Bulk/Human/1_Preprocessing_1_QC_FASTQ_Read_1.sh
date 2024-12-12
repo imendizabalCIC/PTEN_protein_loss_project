@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#| Last change: 12/12/2024
+#| Ivana Rondon
+
 #################################################################################
 ### QUALITY CONTROL ON THE FASTQ FILE WITH FASTQC SOFTWARE FOR RNASEQ ANALYSIS ##
 ###    READ 1 
