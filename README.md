@@ -3,7 +3,6 @@
 Analysis of the bulk RNA-seq data for Human and Mice are inside the folder **"Bulk"**, where scripts labeled with:
 
 1. **"1_Preprocessing_*"**  
-   This step includes:  
    - Adapter trimming of raw data using **Cutadapt**.  
    - Quality control with **FastQC**.  
    - Alignment of FASTQ files using **STAR**.  
