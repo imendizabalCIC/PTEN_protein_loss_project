@@ -20,7 +20,7 @@ Analysis of the bulk RNA-seq data for Human and Mice are inside the folder **"Bu
    - Enrichment analysis of bulk RNA-seq data using **GSEA** and **g:Profiler** on genes significantly associated with PTEN loss.
 
 5. **"5_Celltype_xCell.R"** (Human)  
-   - **xCell**-based deconvolution analysis of bulk RNA-seq data to infer 64 distinct cell types in clinical samples.
+   - **xCell**-based deconvolution analysis of bulk RNA-seq data to infer 64 distinct cell types in the clinical samples.
 
 
 The analysis scripts for single-cell RNA-seq data are located in the "Single-cell" folder, organized as follows:
