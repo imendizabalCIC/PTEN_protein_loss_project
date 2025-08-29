@@ -1,12 +1,62 @@
 ################################################################################
-#####             ENRICHMENT ANALYSIS OF MODULES DE FROM WGCNA             #####                        
+#| ENRICHMENT ANALYSIS OF WGNA MODULES               
+################################################################################
+#| Date: 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#|
+#| Description:
+#| This script characterizes WGCNA modules from the AC-12 mouse RNA-seq dataset and
+#| their differentially expressed genes (DEGs) via functional enrichment and
+#| cross-species validation. It (i) quantifies module sizes and colors, (ii)
+#| overlays module membership on volcano plots, (iii) measures DEG–module overlap
+#| with the Jaccard index, and (iv) performs gprofiler2 enrichment for whole
+#| modules and for module∩DEG gene sets (e.g., yellow, turquoise, black).
+#| Mouse gene sets are mapped to human orthologs to score single-cell signatures
+#| (UCell) and to compare mouse modules against human WGCNA modules from PTEN
+#| loss vs intact cohorts. The script further relates module signatures to
+#| stromal/immune/purity metrics, and validates associations in TCGA (xCell and
+#| PTEN copy-number strata).
+#|
+#| Workflow:
+#|   1) Load WGCNA module assignments (mouse), DEG tables (limma-voom), gene
+#|      annotations, and mouse ->human mappings.  
+#|   2) Summarize module size and visualize module-colored volcano plots.  
+#|   3) Compute Jaccard overlap between DEGs (KO6 vs WT6) and module gene sets
+#|      (overall and UP/DOWN).  
+#|   4) Run gprofiler2 enrichment for selected modules and for module∩DEG sets
+#|      across GO, Reactome, KEGG, HP/TF where present; export ranked tables and
+#|      bubble/dot plots.  
+#|   5) Map mouse genes to human homologs; score UCell signatures on annotated
+#|      human scRNA-seq and plot UMAP/violin distributions.  
+#|   6) Cross-species comparison: intersect mouse modules (e.g., yellow) with
+#|      human WGCNA modules (e.g., green/purple); plot Jaccard bars and enrich the
+#|      intersected genes.  
+#|   7) Associate module/intersection signatures with stromal/immune/purity scores
+#|      and PTEN status (boxplots, Pearson/Wilcoxon), including TCGA validation
+#|      using xCell and PTEN CNA groups.  
+#|
+#| Inputs:
+#|   - WGCNA module table (mouse) with moduleColors and kWithin.  
+#|   - DEG results (limma-voom; KO6 vs WT6) and raw/normalized counts.  
+#|   - Gene annotation (mouse) and mouse->human homolog mapping.  
+#|   - Human WGCNA module table (PTEN loss vs intact), scRNA-seq Seurat object,
+#|     and external xCell/TCGA resources.  
+#|
+#| Outputs:
+#|   - Module size barplots and module-colored volcano plots.  
+#|   - Jaccard overlap plots for DEG->module intersections (overall, UP, DOWN).  
+#|   - gprofiler2 enrichment tables and bubble/dot plots for modules and
+#|     module intersected with DEGs (GO/REAC/KEGG/HP/TF where available).  
+#|   - UMAP and violin plots of UCell scores for mapped mouse module signatures.  
+#|   - Cross-species Jaccard barplots (mouse module vs human modules) and
+#|     enrichment of intersected sets.  
+#|   - Boxplots/correlations of signatures with stromal/immune/purity and PTEN
+#|     status in human cohorts; TCGA validation figures. 
 ################################################################################
 
-
 ################################################################################
-
-
-############################  LIBRARIES AND DATA  ##############################
+#| LIBRARIES AND DATA    
+################################################################################
 suppressMessages(library(WGCNA))
 suppressMessages(library(dplyr))
 suppressMessages(library(gprofiler2))
@@ -22,8 +72,7 @@ suppressMessages(library(DESeq2))
 suppressMessages(library(cowplot))
 suppressMessages(library(VennDiagram))
 suppressMessages(library(UCell))
-suppressMessages(library(homologene))
-package.version("homologene")
+suppressMessages(require(ensembldb))
 
 #| For plots
 theme_set(theme_classic())
@@ -68,10 +117,29 @@ length(DEGs_genes$gene_name[which(( (DEGs_genes$log2FC_limma_voom <  (-log2(FC))
 
 #| Opening the processed data of single cell
 #loc.combined.sct <- readRDS("X:/irondon/Project_AC-45_RNAseq-FFPE/SingleCell/Results/Data/loc_combined_sct_annotated.rds")
+
+#| To transform gene names of mouse to their human homologues: Reading mouse information (containing gene type info)
+ensembl <- useEnsembl(biomart = "genes", dataset = genome, version = version)
+
+homolog_info <- getBM(
+  attributes = c("external_gene_name",  # Mouse Ensembl ID (for merging)
+                 "hsapiens_homolog_associated_gene_name", 
+                 "hsapiens_homolog_ensembl_gene", 
+                 "hsapiens_homolog_orthology_type"),
+  mart = ensembl
+)
+names(homolog_info) <- c(c("gene_name",  # Mouse Ensembl ID (for merging)
+                           "hsapiens_homolog_associated_gene_name", 
+                           "hsapiens_homolog_ensembl_gene", 
+                           "hsapiens_homolog_orthology_type"))
+
+human_homologues <- homolog_info$hsapiens_homolog_associated_gene_name[which(homolog_info$gene_name %in% genes_name)]
+human_homologues <- human_homologues[which(human_homologues!="")]
 ################################################################################
 
-
-############################ PLOT: SIZE OF MODULES #############################
+################################################################################
+#| PLOT: SIZE OF MODULES 
+################################################################################
 #| Size
 size <- c()
 for (i in 1:length(module_colors)){
@@ -97,7 +165,9 @@ ggsave("Results/Images/07_Enrichment_Analysis_of_Modules/5_Module_size.pdf", hei
 ################################################################################
 
 
-####################### VOLCANO WITH MODULE COLORS #############################
+################################################################################
+#| VOLCANO WITH MODULE COLORS 
+################################################################################
 #| Enrichment over all the modules
 modules_color <- sort(module_colors)
 dat_Modules_DEGs <- merge(wgcna_Modules, DEGs_genes, by ="GeneID") 
@@ -148,8 +218,9 @@ ggsave(paste(results.file, "VolcanoPlots_with_Module_colors_LimmaVoom_grey.pdf",
 
 ################################################################################
 
-
-################# % OF DEGS CONTAINED IN THE DIFFERENT MODULES #################  
+################################################################################
+#| % OF DEGS CONTAINED IN THE DIFFERENT MODULES   
+################################################################################
 #| Jaccard function
 jaccard <- function(a, b) {
   intersection = length(intersect(a, b))
@@ -497,13 +568,6 @@ ggplot(dat1_filtered[1:10,], aes(x = reorder(source, -p_value), y = reorder(`Ter
   ylab("Term name")
 ggsave(paste(results.file,"KEGG_Enrichment_module_",mod,".pdf",sep =""), height = 4.5, width = 6.5)
 
-#| Transforming gene names of mouse to their human homologues
-library(homologene)
-package.version("homologene")
-
-# Get human homologous genes
-human_homologues <- homologene(genes_name, inTax = 10090, outTax = 9606)
-human_homologues <- human_homologues$`9606`
 
 #| UCell
 signatures <- list()
@@ -623,9 +687,6 @@ ggplot(dat1_filtered[1:10,], aes(x = reorder(source, -p_value), y = reorder(`Ter
   ylab("Term name")
 ggsave(paste(results.file,"KEGG_Enrichment_module_",mod,".pdf",sep =""), height = 3.5, width = 3.11)
 
-#| Transforming gene names of mouse to their human homologues: Get human homologous genes
-human_homologues <- homologene(genes_name, inTax = 10090, outTax = 9606)
-human_homologues <- human_homologues$`9606`
 
 #| UCell
 signatures <- list()
@@ -1408,5 +1469,3 @@ ggplot(data_phenotype_tcga[which( (data_phenotype_tcga$PTEN_cna == "0") | (data_
   xlab("PTEN protein status")
 ggsave(file= "Results/Images/07_Enrichment_Analysis_of_Modules/Mean_expression_module_yellow_mouse_intersected_module_Purple_human_TCGA.pdf", heigh=4, width= 4.5)
 
-
-#| Plot here the most significant?

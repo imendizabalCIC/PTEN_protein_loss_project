@@ -1,57 +1,54 @@
-
-#| Last change: 12/12/2024
-#| Ivana Rondon-Lorefice
-
 ################################################################################
-######   SCALE-FREE TOPOLOGY FOR JOINT ANALYSIS OF DATA AC-12_RNAseq    ########
+#| SCALE-FREE TOPOLOGY ANALYSIS FOR WGCNA MOUSE DATA 
 ################################################################################
-
-#| WGCNA assumes that the topology of the network being constructed follows the
-#| scale free topology. For instance, it is important to find the correct soft
-#| threshold who best fit to the data in consideration. The assumption made in 
-#| WGCNA is that an element in the adjacent matrix behaves by the following rule:
-#| a_{ij} = (s_{ij})^beta, where beta is the soft-thresholding power and is the
-#| parameter searching in this section. In this way, we can construct a weighted
-#| network.
-
-#| Because log(a_{ij}) = beta*log(s_{ij})), one can infer the value of beta, where
-#| the idea is to try to find the value that fits the best to the scale-free to-
-#| pology. Note that the GENE CONNECTIVIY it is different for weighted and un-
-#| weighted networks:
-
-#|  - For unweighted networks = number of direct neighbors
-
-#|  - For weighted networks = sum of connection strengths to other nodes
-
-#| Scale Free Topology refers to the frequency distribution of the connectivity k
-#| p(k)=proportion of nodes that have connectivity k. So the linear model is fit
-#| by Log transforming p(k) and k and look at scatter plots. This adjustment
-#| is perform by the pickSoftThreshold function.
-
-#| NOTE: To edit a given function use trace(scaleFreeFitIndex, edit = TRUE)
-
-#| Additionally, here is tested the pearson and the bicor approach. See the comments
-#| bellow
-
-#| Call the network topology analysis function
-#| To decide the kind of network please read https://peterlangfelder.com/2018/11/25/signed-or-unsigned-which-network-type-is-preferable/ 
-#| In this blog, Peter explains why he thinks taking signed networks in better than
-#| unsigned ones. In other words, using the absolute value of the correlation may 
-#| obfuscate biologically relevant information, since no distinction is made between
-#| gene repression and activation. In contrast, in signed networks the similarity 
-#| between genes reflects the sign of the correlation of their expression profiles.
-
-#|  Signed hybridic? https://peterlangfelder.com/2018/11/25/__trashed/ 
-#| "Thus, in the end the two signed network variants result in nearly identical 
-#| networks as long as (1) the signed network uses twice the soft thresholding 
-#| power of the signed hybrid network, and (2) the power is suitable for analysis 
-#| of high-throughput, more-variables-than-samples, data: at least 4 for signed 
-#| hybrid, and at least 8 for signed networks. In other words, use either but 
-#| remember to double the power for the signed, compared to the signed hybrid"
-
-#|  Another decision we have to make is which type of correlation we must use, i.e. 
-#| Pearson or Bicor? It is recommended to do the analysis on bicor but it is better
-#| to perform the analysis of the softhresold on both correlation functions.
+#| Date: 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#|
+#| Description:
+#| Determine the soft-thresholding power (beta) for WGCNA on the AC-12_RNAseq mouse 
+#| cohort by assessing scale-free topology fit under a signed network, using both 
+#| Pearson and biweight midcorrelation (bicor).
+#|
+#| Overview:
+#|   * Test beta {1-10, 12, 14, ..., 30} with pickSoftThreshold().
+#|   * Compute and visualize: scale-free fit (R^2) and mean connectivity vs beta.
+#|   * Save plots and the pickSoftThreshold results for downstream network building.
+#|
+#| Workflow:
+#|   1) Load preprocessed expression and traits (from previous data-cleaning step).
+#|   2) Run pickSoftThreshold (networkType = "signed") with:
+#|        - Pearson correlation
+#|        - Bicor (biweight midcorrelation)
+#|   3) Plot for each method:
+#|        - beta vs scale-free fit (signed R^2; higher is better)
+#|        - beta vs mean connectivity (lower connectivity with adequate fit is ideal)
+#|   4) Save:
+#|        - PDFs of both Pearson and bicor selection curves
+#|        - RData with sft_pearson and sft_bicor objects
+#|
+#| Outputs
+#|   - PDFs:
+#|       * 1_Pearson_SoftThreshold_vs_ScaleFreeTopology_and_MeanConnectivity.pdf
+#|       * 1_Bicor_SoftThreshold_vs_ScaleFreeTopology_and_MeanConnectivity.pdf
+#|   - RData:
+#|       * <tag>_sft_pearson_bicor.RData  (fit indices for both methods)
+#|
+#| Background (concise)
+#|   WGCNA approximates biological networks with scale-free topology. Adjacency
+#|   a_ij = s_ij^beta (soft threshold). Because log(a_ij) = beta log(s_ij), pickSoftThreshold
+#|   searches beta that yields high scale-free fit (signed R^2) while retaining a
+#|   reasonable mean connectivity. In weighted networks, gene connectivity is the
+#|   sum of connection strengths to other nodes (not just neighbor counts).
+#|
+#| Notes & Recommendations
+#|   * Signed vs unsigned networks:
+#|       Signed networks preserve correlation sign and are generally preferred
+#|       (see Peter Langfelder's guidance). Signed-hybrid and signed are nearly
+#|       equivalent if you approximately double beta for signed vs signed-hybrid.
+#|   * Correlation choice:
+#|       Bicor is robust to outliers; evaluate both Pearson and bicor and select
+#|       the beta that achieves adequate signed R^2 (often >= 0.8) with acceptable
+#|       mean connectivity for your data.
 ################################################################################
 
 

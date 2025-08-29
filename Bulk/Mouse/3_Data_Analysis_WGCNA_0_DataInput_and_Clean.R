@@ -1,26 +1,36 @@
-#| Last change: 12/12/2024
-#| Ivana Rondon-Lorefice
+################################################################################
+#| DATA INPUT AND CLEAN FOR WGCNA ANALYSIS              
+################################################################################
+#| Date 12/12/2024
+#| Author: Ivana Rondon-Lorefice
+#|
+#| Description:
+#| This script performs preprocessing of RNA-seq expression and trait data to 
+#| prepare them for Weighted Gene Co-expression Network Analysis (WGCNA). The 
+#| workflow includes transformation, filtering, clustering, and saving cleaned 
+#| data in a suitable format for downstream network construction.
+#|
+#| Main steps:
+#|   1) Import expression counts and sample trait metadata.
+#|   2) Transform categorical variables into binary/numeric representations.
+#|   3) Filter low-count genes and apply variance-stabilizing transformation (VST).
+#|   4) Detect and remove samples/genes with excessive missing values or outliers.
+#|   5) Perform hierarchical clustering of samples to visualize structure and detect outliers.
+#|   6) Plot sample dendrograms with trait heatmaps for QC.
+#|   7) Save processed expression and trait data in an RData object for WGCNA input.
+#|
+#| Output:
+#|   - Sample clustering plots (PDF).
+#|   - Sample dendrogram with trait heatmap (PDF).
+#|   - Cleaned expression matrix and trait data (RData file).
+################################################################################
+
 
 
 ################################################################################
-#####             DATA INPUT AND CLEAN FOR WGCNA ANALYSIS                    ###
+#| LIBRARIES AND DATA
 ################################################################################
 
-#|    DESCRIPTION:
-#| The first of WGCNA is to pre-process the data into a suitable format for network
-#| analysis. So, in this script is perform the following points:
-
-#|    1) Transforming categorical variables to binary vectors
-#|    2) Testing the existence of outliers and removing them as well as missing values
-#|    3) Creating a clustering plot of samples with a hierarchical clustering 
-#|    4) Visualizing the clustering of samples by traits
-#|    5) Saving data expression and data traits in a R workspace file
-
-################################################################################
-
-
-
-################################ LIBRARIES #####################################
 suppressMessages(library(WGCNA))
 suppressMessages(library(dplyr))
 suppressMessages(library(skimr))
@@ -35,11 +45,7 @@ suppressMessages(library(viridis))
 suppressMessages(library(DESeq2))
 
 options(stringsAsFactors = FALSE)
-################################################################################
 
-
-
-##################################  DATA  ######################################
 #| File directories
 dir.proj <- "X:/irondon/AC-12_RNAseq/07_WGCNA/"
 info.file <- "X:/irondon/AC-12_RNAseq/04_DEGs/Data/sample_info_AC-12_RNAseq.txt"
@@ -73,8 +79,9 @@ any(assay(vsd.blind) == assay(vsd.noblind)) #| When the design is not given, it 
 ################################################################################
 
 
-#################    DEALING WITH CATEGORICAL VARIABLES    #####################
-
+################################################################################
+#| DEALING WITH CATEGORICAL VARIABLES   
+################################################################################
 #|  NOTE:
 #| In the case of the variable group (or those which have more than two levels) 
 #| it is better to separate then into groups of categorical variable using the 
@@ -110,7 +117,10 @@ datTraits_final <- datTraits_final[,c("KO6.vs.WT6", "KO3.vs.WT3")]
 
 
 
-##############################    DATA CLEAN   #################################
+
+################################################################################
+#|    DATA CLEAN   
+################################################################################
 
 #| We need to transpose the expression data for further analysis.
 datExpr <- as.data.frame(t(assay(vsd.noblind)))
@@ -131,10 +141,11 @@ if (!gsg$allOK){
   # Remove the offending genes and samples from the data:
   datExpr <- datExpr[gsg$goodSamples, gsg$goodGenes]
 }
+################################################################################
 
-
-
-######################### CLUSTERING DENDOGRAMS ################################
+################################################################################
+#| CLUSTERING DENDOGRAMS 
+################################################################################
 
 #| Next, we cluster the samples (which is not the same as the clustering genes 
 #| that will come later) to see if the are any obvious outliers
@@ -172,7 +183,6 @@ plot(sampleTree,
      cex=0.28,
      family ="serif", ylim= c(0,1.1))
 dev.off()
-################################################################################
 
 
 outlier <- F
@@ -190,7 +200,7 @@ if (outlier){
   keepSamples <- (clust == 1) 
   datExpr <- datExpr[keepSamples,]
 }
-
+################################################################################
 
 
 ################################################################################

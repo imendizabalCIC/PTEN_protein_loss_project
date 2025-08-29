@@ -1,19 +1,39 @@
-#| Last change: 12/12/2024
-#| Ivana Rondon-Lorefice
+################################################################################
+#| RELATING MODULES TO EXTERNAL INFORMATION WITH DATA          
+################################################################################
+#| Date: 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#|
+#| Description:
+#| This script integrates WGCNA module eigengenes with clinical and molecular traits 
+#| from the AC-12_RNAseq mouse cohort (Pten KO6, WT6, KO3, WT3). It quantifies 
+#| correlations between modules and external traits, identifies biologically 
+#| relevant modules, and explores the relationship between module membership and 
+#| gene significance.
+#|
+#| Workflow:
+#|   1) Load WGCNA network results (modules, eigengenes, dendrograms) and trait data.  
+#|   2) Recalculate eigengenes and plot dendrograms with module colors.  
+#|   3) Correlate module eigengenes with clinical variables (PTEN protein, H-score, 
+#|      stromal, immune, purity, etc.).  
+#|   4) Visualize results with scatter plots and module-trait heatmaps.  
+#|   5) Quantify gene-level associations:  
+#|        - Module membership (MM) with respect to eigengenes.  
+#|        - Gene significance (GS) with respect to traits.  
+#|   6) Plot GS-MM relationships per module and trait to highlight key drivers.  
+#|   7) Save summary tables of module membership and gene-trait significance.  
+#|
+#| Outputs:
+#|   - Module-trait association plots (PDF).  
+#|   - Heatmaps of module-trait correlations and eigengene networks.  
+#|   - GS-MM scatterplots for each module-trait pair.  
+#|   - Summarized table: geneInfo with counts, MM, GS, and module colors.  
+################################################################################
+
 
 ################################################################################
-##### RELATING MODULES TO EXTERNAL INFORMATION WITH DATA AC-45_RNAseq-FFPE #####
+#|  LIBRARIES AND DATA
 ################################################################################
-
-#| This script related the module found with blockwise method with the clinical
-#| traits of the AC-45_RNAseq-FFPE data. The idea is to find those modules having
-#| high correlation with the traits of interest
-
-################################################################################
-
-
-
-###############################  LIBRARIES  ####################################
 suppressMessages(library(WGCNA))
 suppressMessages(library(gprofiler2))
 suppressMessages(library(ggplot2))
@@ -25,11 +45,7 @@ suppressMessages(library(ggrepel))
 suppressMessages(library(pheatmap))
 suppressMessages(library(corrplot))
 options(stringsAsFactors = FALSE)
-################################################################################
 
-
-
-#################################  DATA  #######################################
 dir.proj <- "X:/irondon/AC-12_RNAseq/07_WGCNA/"
 results.file <- "X:/irondon/AC-12_RNAseq/07_WGCNA/Results/Images/03_Module-trait relationships/"
 data.file <- "X:/irondon/AC-12_RNAseq/07_WGCNA/Results/Data/"
@@ -49,6 +65,8 @@ datTraits <- datTraits_final
 ################################################################################
 
 
+################################################################################
+#|  GENE DENDOGRAMS AND MODULE COLORS
 ################################################################################
 
 #| Relabel blockwise modules
@@ -83,7 +101,9 @@ MEs = orderMEs(MEs0)
 
 
 
-##################### ASSOCIATION OF MODULES WITH TRAITS #######################
+################################################################################
+#|  ASSOCIATION OF MODULES WITH TRAITS
+################################################################################
 
 Association_function <- function(MEs, Trait, nSamples,nModules, bwModuleColors,label,results.file){
   
@@ -151,7 +171,9 @@ Association_function(MEs, datTraits$KO3.vs.WT3, nSamples,nModules,bwModuleColors
 ################################################################################
 
 
-################    Quantifying module-trait associations    #################   
+################################################################################
+#| QUANTIFYING MODULE-TRAIT ASSOCIATIONS
+################################################################################
 
 #| Module trait correlation of every variable
 moduleTraitCor = cor(MEs, datTraits, use = "p")
@@ -221,7 +243,9 @@ dev.off()
 ################################################################################
 
 
-###############  GENE SIGNIFICANCE AND MODULE MEMBERSHIP  ######################
+################################################################################
+#| GENE SIGNIFICANCE AND MODULE MEMBERSHIP
+################################################################################
 
 #|       Module Membership
 
@@ -257,7 +281,9 @@ write.table(geneInfo, paste(data.file, "3_geneInfo_counts_geneMM_geneS_moduleCol
 ################################################################################
 
 
-################## GENE SIGNIFICANCE AND MODULE MEMBERSHIP #####################
+################################################################################
+#| GENE SIGNIFICANCE AND MODULE MEMBERSHIP
+################################################################################
 
 #| Creating a function for Gene Significance and Module membership association
 GS_MM <- function(module, geneInfo, GS.trait, label, result.file){
