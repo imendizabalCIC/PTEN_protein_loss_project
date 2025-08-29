@@ -1,72 +1,54 @@
 #/opt/R/R-4.1.2/bin/R
 
-#| Last change: 12/12/2024
-#| Ivana Rondon-Lorefice
-
 ###############################################################################
 ####### THIS CODES CREATES A SCRIPT FOR EACH FILE FASTA AND SUMIT JOBS ########
 ###############################################################################
-
-#| This scripts creates a .sh file and then is launched to the job executor in 
-#| indar to mapping the RNAseq of 240 patients with prostate cancer that underwent
-#| surgery for prostate extraction. Note that the files selected for the mapping 
-#| with STAR contains the Forward (*_1 files) and Reverse (*_2 files). 
-
-#|     STAR command line:
-#|  STAR --genomeDir genomedir [options] file1 file2 --outFileNamePrefix outdir
-
-#| Parameters used here:
-#|    1) --genomeDir: specifies path to the directory where the genome indices 
-#|       are stored.
-#|    2) --runThreadN: this option defines the number of threads to be used for 
-#|       genome generation, it has to be set to the number of available cores on 
-#|       the server node. (max 16 with Indar and 36 with Nextera)
-#|    3) --readFilesIn: name(s) (with path) of the files containing the sequences 
-#|       to be mapped (e.g. RNA-seq FASTQ files). If using Illumina paired-end 
-#|       reads, the read1 and read2 files have to be supplied. 
-#|    4) --readFilesCommand: UncompressionCommand option. (set gunzip -c)
-#|    5) --outFilterMultimapNmax: max number of multiple alignments allowed for 
-#|       a read: if exceeded, the read is considered unmapped. Default 20.
-#|       COMMENTS FROM THE WEB: --outFilterMultimapNmax 1 limits the output to 
-#|       just the uniquely-mapping reads (i.e. reads that confidently map to only 
-#|       one locus). If the genes of interest have high sequence similarity, this
-#|       option will probably eliminate a large number of reads that map to multiple 
-#|       loci. Working with multi-mappers, on the other hand, requires a strategy 
-#|       to assign them to specific loci. Note that: if the GeneCounts option is
-#|       used, STAR counts only uniquely mapping reads, without regard to the 
-#|       --outFilterMultimapNmax value.
-#|    6) --outReadsUnmapped: string: output of unmapped and partially mapped 
-#|      (i.e. mapped only one mate of a paired end read) reads in separate file(s).
-#|      Default None.
-#|          * None: no output
-#|          * Fastx: output in separate fasta/fastq files, Unmapped.out.mate1/2   
-#|    7) --outSAMtype: Default: SAM. Strings: type of SAM/BAM output
-#|           1st word:
-#|             * BAM: output BAM without sorting
-#|             * SAM: output SAM without sorting
-#|             * None: no SAM/BAM output
-#|           2nd, 3rd:
-#|             * Unsorted: standard unsorted
-#|             * SortedByCoordinate: sorted by coordinate. This option will allocate 
-#|               extra memory for sorting which can be specified by -limitBAMsortRAM.
-#|    8) --twopassMode: String 2-pass mapping mode. Default None. Annotated junctions 
-#|       will be included in both the 1st and 2nd passes. To run STAR 2-pass mapping 
-#|       for each sample separately, use --twopassMode Basic option. STAR will perform 
-#|       the 1st pass mapping, then it will automatically extract junctions, insert 
-#|       them into the genome index, and, finally, re-map all reads in the 2nd mapping 
-#|       pass. 
-#|           * None: 1-pass mapping
-#|           * Basic: 2-pass mapping, with all 1st pass junction inserted into the 
-#|             genome indices on the fly  
-#|    9) --limitBAMsortRAM: int>=0: maximum available RAM (bytes) for sorting BAM. 
-#|       If =0, it will be set to the genome index size. 0 value can only be used with 
-#|      -genomeLoad NoSharedMemory option. Defaul 0.
-#|    10) --quantMode: string(s): types of quantification requested.
-#|           * -: None
-#|           * TranscriptomicSAM: output SAM/BAM alignments to transcriptome into a 
-#|             separate file
-#|           * GeneCounts: count reads per gene
-
+#| Date: 12/12/2024
+#| Author: Ivana Rondon-Lorefice
+#|
+#| Description:
+#| This script scans a FASTQ directory, derives sample IDs from paired-end files
+#| (<sample>_1.fastq.gz and <sample>_2.fastq.gz), and for each sample:
+#|   * Writes a per-sample SLURM shell script that runs STAR alignment
+#|   * Submits the job to the Indar cluster via `sbatch`
+#|
+#| Use case
+#| Mapping RNA-seq reads from a prostate cancer cohort of mice to the
+#| mouse reference (STAR genome index), producing coordinate-sorted BAMs and
+#| per-gene counts.
+#|
+#| Key STAR options (per job)
+#|   --genomeDir <index>                    : STAR genome index
+#|   --runThreadN <cpu>                     : threads per sample
+#|   --readFilesIn R1 R2                    : gzipped PE FASTQs
+#|   --readFilesCommand gunzip -c           : on-the-fly decompression
+#|   --outFilterMultimapNmax 1              : keep uniquely mapped reads
+#|   --outReadsUnmapped Fastx               : write unmapped mates
+#|   --outSAMtype BAM SortedByCoordinate    : sorted BAM output
+#|   --twopassMode Basic                    : 2-pass mapping
+#|   --limitBAMsortRAM 2000000000           : RAM for BAM sorting (bytes)
+#|   --quantMode TranscriptomeSAM GeneCounts: transcriptome BAM + gene counts
+#|
+#| Cluster settings (per job)
+#|   * CPUs: 8
+#|   * Memory: 40G
+#|   * Time limit: 10:00:00
+#|   * Partition: FAST
+#|   * Email on FAIL: irondon@cicbiogune.es
+#|
+#| Inputs
+#|   * FASTQs (gz): /vols/GPArkaitz_bigdata/DATA_shared/AC-12_RNAseq/FASTQs/
+#|   * STAR index : /vols/GPArkaitz_bigdata/DATA_shared/Genomes_Rocky/Indexes/Mouse_101
+#|
+#| Outputs
+#|   * Per-sample STAR results under:
+#|       /vols/GPArkaitz_bigdata/irondon/AC-12_RNAseq/02_STAR/Outdir_STAR/<sample>_STAR*
+#|   * Per-sample SLURM scripts: STAR_<sample>.sh
+#|   * SLURM logs: <sample>.out / <sample>.err (in working dir)
+#|
+#| Notes
+#|   * Samples are inferred from *_1.fastq.gz; matching *_2.fastq.gz must exist.
+#|   * Adjust CPU/memory/time/partition to your queue availability if needed.
 ################################################################################
 
 
@@ -104,7 +86,6 @@ partition <- "FAST"
 ################################################################################
 #|  JOBS LOOP  
 ################################################################################
-
 for(s in 1:length(samples)){
 
   # Name of the file (regarding the sample variable)
@@ -138,3 +119,4 @@ for(s in 1:length(samples)){
   system(paste("sbatch", filename, sep = " "))
 
 }
+################################################################################

@@ -1,13 +1,29 @@
-#| Last change: 12/12/2024
-#| Ivana Rondon-Lorefice
 
 ###############################################################################
-############### ANALYSIS OF THE RESULTS OBTAINED WITH STAR ####################
+#| ANALYSIS OF THE RESULTS OBTAINED WITH STAR 
 ###############################################################################
-
-#| This script creates a dataframe that summarizes the mapping process results,  
-#| such as errors in the process, mapped length, percentage of unique mapping, etc...
-
+#| Date: 12/12/2024
+#| Author: Ivana RondonLorefice
+#|
+#| Description:
+#| This script summarizes the results of RNA-seq read alignment performed with STAR 
+#| for the AC-12_RNAseq. It parses both SLURM log files and STAR 
+#| output reports to build a summary of mapping quality.
+#|
+#| Main tasks:
+#|   - Check each SLURM output file to confirm whether the mapping job finished successfully.
+#|   - Parse STARLog.final.out files to extract key metrics such as:
+#|        * Read length and total number of reads
+#|        * Percentage of uniquely mapped reads
+#|        * Average mapped read length
+#|        * Mismatch rates
+#|        * Rates of multimapping and unmapped reads (by reason)
+#|   - Store all results in a single dataframe (`mapping_summary`).
+#|   - Generate exploratory boxplots to visualize mapping quality across samples.
+#|
+#| Output:
+#|   - A summary dataframe of STAR mapping statistics per sample.
+#|   - Boxplots showing the distribution of mapping and unmapped read percentages.
 ###############################################################################
 
 

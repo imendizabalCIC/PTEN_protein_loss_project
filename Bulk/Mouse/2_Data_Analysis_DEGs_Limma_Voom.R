@@ -1,11 +1,32 @@
-#| Last change: 12/12/2024
-#| Ivana Rondon-Lorefice
-
 ################################################################################
-#|  SCRIPT TO PERFORM DIFFERENTIAL GENE EXPRESSION ANALYSIS WITH LIMMA VOOM
+#|  DIFFERENTIAL GENE EXPRESSION ANALYSIS WITH LIMMA-VOOM
+################################################################################
+#| Date: 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#|
+#| Description:
+#| This script performs differential gene expression (DGE) analysis using the 
+#| Limma-voom pipeline. The workflow includes:
+#|   1. Reading raw count data
+#|   2. Normalization with DESeq2 size factors
+#|   3. Defining experimental conditions
+#|   4. Limma-voom modeling and fitting contrasts
+#|   5. Exporting DEG results (log2FC, p-values, FDR)
+#|   6. Visualization: Volcano plots, waterfall plots, top DEGs barplots, and 
+#|      multiple versions of heatmaps (row-/column-clustered)
+#|
+#| Input:
+#|   - Raw counts: X:/irondon/AC-12_RNAseq/03_RAW_COUNTS/AC-12_RNAseq_Raw_Counts.txt
+#|   - Gene annotation: X:/irondon/AC-12_RNAseq/04_DEGs/Data/geneInfo.txt
+#|
+#| Output:
+#|   - DEG results: Results/Tables/Limma_voom_analysis_DEGS_results.txt
+#|   - Visualizations: Results/Images/KO6_vs_WT6/*.pdf
+#|
+#| Reference pipeline:
+#|   https://ucdavis-bioinformatics-training.github.io/2018-June-RNA-Seq-Workshop/thursday/DE.html
 ################################################################################
 
-#| Pipeline: https://ucdavis-bioinformatics-training.github.io/2018-June-RNA-Seq-Workshop/thursday/DE.html
 
 ################################################################################
 #| LIBRARIES

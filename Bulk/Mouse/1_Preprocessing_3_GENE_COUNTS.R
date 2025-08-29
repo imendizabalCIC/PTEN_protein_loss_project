@@ -1,15 +1,32 @@
-#| Last change: 12/12/2024
-#| Ivana Rondon
-
 ################################################################################
-######### SCRIPT TO OBTAIN THE RAW COUNT MATRIX FROM THE STAR RESULTS ##########
+#| SCRIPT TO OBTAIN RAW COUNT MATRIX FROM STAR OUTPUT 
 ################################################################################
-
-#|  This script is contructed based on a script from AC bioinfo group for counting 
-#| the number of RNA molecules from the STAR results. The data analysed is stored 
-#| at: X:/DATA_shared/AC-45_RNAseq-FFPE/FASTQs and the Ana Rosas's scripts are in:
-#| X:/DATA_shared/NDM/RNAseq_scripts_by_AnaRosaCortazar
-
+#| Date: 12/12/2024
+#| Author: Ivana Rondon
+#| 
+#| Description:
+#| This script generates a raw count matrix from STAR aligner results.
+#| Specifically, it extracts read counts from the `ReadsPerGene.out.tab` files 
+#| produced by STAR, keeping the correct strandedness column (reverse strand for 
+#| SMARTer Stranded Total RNA Pico libraries).
+#|
+#|
+#| Input:
+#|   - STAR outputs (*.ReadsPerGene.out.tab) located in:
+#|       X:/irondon/AC-12_RNAseq/02_STAR/Outdir_STAR/
+#|
+#| Output:
+#|   - Raw count matrix (ENSEMBL gene IDs as rows, samples as columns), saved at:
+#|       X:/irondon/AC-12_RNAseq/03_RAW_COUNTS/AC-12_RNAseq_Raw_Counts.txt
+#|
+#| Notes on strandedness:
+#|   The `ReadsPerGene.out.tab` file has 4 columns:
+#|     1) Gene ID
+#|     2) Unstranded counts
+#|     3) Forward-stranded counts
+#|     4) Reverse-stranded counts
+#|   Since this library prep is SMARTer Stranded Total RNA Pico (paired-end, 
+#|   cDNA synthesis by SMARTScribe RT), we use column 4 (reverse strand).
 ################################################################################
 
 
@@ -17,28 +34,27 @@
 ################################################################################
 #| Into the ReadsPerGene.out.tab we can find 4 columns which correspond to different
 #| strandedness options:
-
+#|
 #| 1) column 1: gene ID
 #| 2) column 2: counts for unstranded RNA-seq
 #| 3) column 3: counts for the 1st read strand aligned with RNA (htseq-count option -s yes)
 #| 4) column 4: counts for the 2nd read strand aligned with RNA (htseq-count option -s reverse)
-
-
+#|
 #| This information comes from the sequencer. The library used is SMARTer Stranded 
 #| Total RNA Pico. The sequencing is paired-end. The 1st strand cDNA synthesis was 
 #| performed using SMARTScribe reverse Transcriptase. Hence you would use the 4th 
 #| column (Reversely stranded)
 strandSpecific <- "stranded"
 stranded <- 3 
-
-#if (strandSpecific == "unstranded") {
-#  stranded <- 1
-#} else if (strandSpecific == "stranded") {
-#  stranded <- 2 # Forward strand
-#} else {
-#  stranded <- 3 # Reversely stranded    
-#} 
-
+#|
+#|if (strandSpecific == "unstranded") {
+#|  stranded <- 1
+#|} else if (strandSpecific == "stranded") {
+#|  stranded <- 2 # Forward strand
+#|} else {
+#|  stranded <- 3 # Reversely stranded    
+#|} 
+#|
 workingDir <- "X:/irondon/AC-12_RNAseq/03_RAW_COUNTS/"
 setwd(workingDir)
 ################################################################################
@@ -110,5 +126,4 @@ RawCounts <- RawCounts[order(colnames(RawCounts))]
 
 #| Save the count dataframe
 write.table(RawCounts, paste(counts.dir, tag.name, ".txt", sep =""), quote=F, row.names=T, sep="\t") 
-
 ################################################################################
