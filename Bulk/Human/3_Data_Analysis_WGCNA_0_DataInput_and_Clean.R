@@ -1,20 +1,28 @@
-#| Last change: 12/12/2024
-#| Ivana Rondon-Lorefice
-
 ################################################################################
-#####             DATA INPUT AND CLEAN FOR WGCNA ANALYSIS                  #####
+#| DATA INPUT AND CLEAN FOR WGCNA ANALYSIS              
 ################################################################################
-
-#|    DESCRIPTION:
-#| The first of WGCNA is to pre-process the data into a suitable format for network
-#| analysis. So, in this script is perform the following points:
-
-#|    1) Transforming categorical variables to binary vectors
-#|    2) Testing the existence of outliers and removing them as well as missing values
-#|    3) Creating a clustering plot of samples with a hierarchical clustering 
-#|    4) Visualizing the clustering of samples by traits
-#|    5) Saving data expression and data traits in a R workspace file
-
+#| Date 12/12/2024
+#| Author: Ivana Rondon-Lorefice
+#|
+#| Description:
+#| This script performs preprocessing of RNA-seq expression and trait data to 
+#| prepare them for Weighted Gene Co-expression Network Analysis (WGCNA). The 
+#| workflow includes transformation, filtering, clustering, and saving cleaned 
+#| data in a suitable format for downstream network construction.
+#|
+#| Main steps:
+#|   1) Import expression counts and sample trait metadata.
+#|   2) Transform categorical variables into binary/numeric representations.
+#|   3) Filter low-count genes and apply variance-stabilizing transformation (VST).
+#|   4) Detect and remove samples/genes with excessive missing values or outliers.
+#|   5) Perform hierarchical clustering of samples to visualize structure and detect outliers.
+#|   6) Plot sample dendrograms with trait heatmaps for QC.
+#|   7) Save processed expression and trait data in an RData object for WGCNA input.
+#|
+#| Output:
+#|   - Sample clustering plots (PDF).
+#|   - Sample dendrogram with trait heatmap (PDF).
+#|   - Cleaned expression matrix and trait data (RData file).
 ################################################################################
 
 

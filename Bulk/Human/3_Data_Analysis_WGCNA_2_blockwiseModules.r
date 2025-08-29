@@ -1,37 +1,46 @@
-#| Last change: 12/12/2024
-#| Ivana Rondon-Lorefice
 
 ##############################################################################################################
-########################  NETWORK CONSTRUCTION OF THE PTEN PROTEIN LOSS DATA  ################################
+#|  NETWORK CONSTRUCTION FOR PROJECT PTEN PROTEIN LOSS (WGCNA)
 ##############################################################################################################
-
-#| In here, we have used the "blockwiseModules" from WGCNA, to construct our gene co-expression network from our
-#| clinical cohort. We have used a signed network topology. We have selected the following parameters:
-
-#| * corType= "bicor", 
-#| * maxPOutliers =0.1, 
-#| * pearsonFallback = "individual", 
-#| * networkType ="signed", 
-#| * deepSplit=1, 
-#| * mergeCutHeight = 0.1
-
+#| Date: 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#|
+#| Description:
+#| Build a signed gene co-expression network with WGCNA’s `blockwiseModules` for the
+#| AC-45_RNAseq-FFPE cohort (PTEN protein loss vs presence). Uses biweight mid-correlation
+#| (bicor) with robust outlier handling and saves module assignments, eigengenes, dendrograms,
+#| and TOM files for downstream analyses.
+#|
+#| Key settings:
+#|   - corType = "bicor", maxPOutliers = 0.1, pearsonFallback = "individual"
+#|   - networkType = "signed", TOMType = "signed", power = 14
+#|   - deepSplit = 1 (conservative module splitting), mergeCutHeight = 0.1 (aggressive merge)
+#|   - maxBlockSize = 25,000, minModuleSize = min(25, ncol(datExpr)/2)
+#|   - numericLabels = TRUE, nThreads = 5
+#|
+#| Workflow:
+#|   1) Load preprocessed expression matrix (`datExpr`) from the data input/cleaning step.
+#|   2) Run `blockwiseModules` with the settings above to construct the signed network.
+#|   3) Save: network object (`net`), module eigengenes (MEs), colors/labels, and gene tree.
+#|   4) Persist TOMs to disk for reproducibility and later module refinement.
+#|   5) Log total execution time.
+#|
+#| Outputs:
+#|   - ../Results/Data/2_blockwiseModules_TOM_AC_45_RNAseq_FFPE_last_try.*   (TOM files)
+#|   - ../Results/Data/2_blockwiseModules_AC_45_RNAseq_FFPE_last_try.RData   (net, MEs, labels, colors, tree)
+#|   - ../Results/Data/ex_time_bicor_last_try.txt                            (runtime log)
 ###############################################################################################################
 
 
 ###############################################################################################################
+# RUNNING blockwiseModules FUNCTION
+###############################################################################################################
+
 #| LOADING WGCNA LIBRARY AND SETTING START SYSTEM TIME
-###############################################################################################################
-
 start_time <- Sys.time()
 library(WGCNA)
 options(stringsAsFactors = FALSE);
 enableWGCNAThreads()
-
-###############################################################################################################
-
-###############################################################################################################
-# blockwiseModules
-###############################################################################################################
 
 data <- load(file="../Results/Data/AC-45_RNAseq-FFPE_dataInput_last_try.RData")
 net <- blockwiseModules(

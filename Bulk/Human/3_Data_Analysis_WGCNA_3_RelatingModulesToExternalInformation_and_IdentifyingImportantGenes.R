@@ -1,15 +1,34 @@
-#| Last change: 12/12/2024
-#| Ivana Rondon-Lorefice
 
 ################################################################################
-#####          RELATING MODULES TO EXTERNAL INFORMATION WITH DATA          #####
+#| RELATING MODULES TO EXTERNAL INFORMATION WITH DATA          
 ################################################################################
-
-#| In this script, we correlate network parameters with traits of interest. Specifically, 
-#| we correlate module eigengenes with clinical traits, quantify module membership, 
-#| and assess gene significance. We also plot the association of each module with the loss 
-#| of PTEN protein to identify those that are highly correlated with this trait.
-
+#| Date: 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#|
+#| Description:
+#| This script integrates WGCNA module eigengenes with clinical and molecular traits 
+#| from the AC-45_RNAseq-FFPE cohort (PTEN protein loss vs presence). It quantifies 
+#| correlations between modules and external traits, identifies biologically 
+#| relevant modules, and explores the relationship between module membership and 
+#| gene significance.
+#|
+#| Workflow:
+#|   1) Load WGCNA network results (modules, eigengenes, dendrograms) and trait data.  
+#|   2) Recalculate eigengenes and plot dendrograms with module colors.  
+#|   3) Correlate module eigengenes with clinical variables (PTEN protein, H-score, 
+#|      stromal, immune, purity, etc.).  
+#|   4) Visualize results with scatter plots and module-trait heatmaps.  
+#|   5) Quantify gene-level associations:  
+#|        - Module membership (MM) with respect to eigengenes.  
+#|        - Gene significance (GS) with respect to traits.  
+#|   6) Plot GS-MM relationships per module and trait to highlight key drivers.  
+#|   7) Save summary tables of module membership and gene-trait significance.  
+#|
+#| Outputs:
+#|   - Module-trait association plots (PDF).  
+#|   - Heatmaps of module-trait correlations and eigengene networks.  
+#|   - GS-MM scatterplots for each module-trait pair.  
+#|   - Summarized table: geneInfo with counts, MM, GS, and module colors.  
 ################################################################################
 
 

@@ -1,10 +1,33 @@
 ################################################################################
-####        LIMMA VOOM TO TEST DIFFERENTIALLY EXPRESSED GENES BETWEEN       ####          
-####                      PTEN PROTEIN LOSS AND PRESENCE                    ####
+#| LIMMA VOOM TO TEST DIFFERENTIALLY EXPRESSED GENES BETWEEN PTEN PROTEIN LOSS AND PRESENCE                    
 ################################################################################
-
-#| Pipeline used for Limma Voom: https://ucdavis-bioinformatics-training.github.io/2018-June-RNA-Seq-Workshop/thursday/DE.html
-
+#| Date: 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#|
+#| Description:
+#| This script applies the limma-voom pipeline to identify differentially expressed 
+#| genes (DEGs) between PTEN protein loss and presence in the AC-45_RNAseq-FFPE 
+#| dataset. It integrates preprocessing, DEG detection, visualization, and functional 
+#| enrichment to characterize expression changes.
+#|
+#| Workflow:
+#|   1) Load raw count matrix and sample metadata.
+#|   2) Filter and normalize counts using edgeR/voom.
+#|   3) Fit linear models (limma) including covariates (Age, DV200).
+#|   4) Test contrasts for PTEN loss vs presence.
+#|   5) Generate DEG tables with log2FC, p-values, and adjusted p-values.
+#|   6) Visualize results with volcano plots, barplots (log2FC), and heatmaps.
+#|   7) Perform enrichment analysis (GO, KEGG, Reactome) separately for up- and 
+#|      down-regulated genes.
+#|
+#| Outputs:
+#|   - Tables/Limma_voom_analysis_DEGS_results.txt (DEG table)
+#|   - Volcano and bar plots of DEGs (PDF)
+#|   - Heatmaps of DEG expression (PDF, clustered and unclustered versions)
+#|   - Enrichment analysis plots for DEGs (GO, KEGG, Reactome)
+#|
+#| Reference pipeline: 
+#|   https://ucdavis-bioinformatics-training.github.io/2018-June-RNA-Seq-Workshop/thursday/DE.html
 ################################################################################
 
 
@@ -14,7 +37,6 @@ suppressMessages(library(DESeq2))
 suppressWarnings(library(edgeR, quietly = T))
 suppressMessages(library(viridis))
 suppressMessages(library(VennDiagram))
-suppressMessages(library(RColorBrewer))
 suppressMessages(library(ggplot2))
 suppressMessages(library(ComplexHeatmap))
 suppressMessages(library(apeglm))
@@ -28,20 +50,11 @@ suppressMessages(library(genefilter))
 suppressMessages(library(gplots))
 suppressMessages(library(circlize))
 suppressMessages(library(ggrepel))
-suppressMessages(library(apeglm))
-suppressMessages(library(ggplot2))
-suppressMessages(library(RColorBrewer))
-suppressMessages(library(dplyr))
-suppressMessages(library(pheatmap))
 suppressMessages(library(variancePartition))
 suppressMessages(library(corrplot))
 suppressMessages(library(ggpubr))
 suppressMessages(library(rstatix))
-suppressMessages(library(viridis))
-suppressMessages(library(gplots))
 suppressMessages(library(limma))
-suppressMessages(library(edgeR))
-suppressMessages(library(vsn))
 suppressMessages(library(utils))
 suppressMessages(library(tidyestimate))
 suppressMessages(library(corrr))
