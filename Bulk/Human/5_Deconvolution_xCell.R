@@ -1,12 +1,37 @@
 ################################################################################
-################################### xCELL ######################################
+#| xCell STROMAL AND IMMUNE LANDSCAPE ANALYSIS
+################################################################################
+#| Date: 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#|
+#| Description:
+#| This script applies the xCell algorithm to infer the abundance of 64 immune and 
+#| stromal cell types in the AC-45_RNAseq-FFPE cohort, stratified by PTEN protein 
+#| status (IHC-based H-score). Results are integrated with transcriptomic data 
+#| and clinical annotations.  
+#|
+#| Workflow:
+#|   1) Load expression matrix, sample information, and genome annotation.  
+#|   2) Filter genes and samples, convert identifiers to HGNC symbols, and 
+#|      compute TPM values (xCell input format).  
+#|   3) Run xCellAnalysis to obtain immune/stromal cell type enrichment scores.  
+#|   4) Merge xCell results with clinical metadata (PTEN protein, mRNA, H-score).  
+#|   5) Compare stromal, immune, and microenvironment scores between PTEN groups 
+#|      using Wilcoxon tests and boxplots.  
+#|   6) Identify significantly different cell types between PTEN presence vs intact.  
+#|   7) Correlate inferred cell types with PI3K–AKT–mTOR pathway expression.  
+#|   8) Generate visualizations: boxplots, barplots, and bubble plots.  
+#|
+#| Outputs:
+#|   - Updated sample_info table with xCell scores.  
+#|   - Boxplots of cell type scores across PTEN groups.  
+#|   - Wilcoxon test results for immune/stroma differences.  
+#|   - Correlation plots between cell type scores and PI3K-AKT-mTOR activity.  
 ################################################################################
 
-#| Code for inference the score of different cell types using xCell.
-
 ################################################################################
-
-########################### LIBRARIES AND DATA #################################
+#|  LIBRARIES  AND DATA
+################################################################################
 suppressMessages(library(xCell))
 suppressMessages(library(ggplot2))
 suppressMessages(library(viridis))

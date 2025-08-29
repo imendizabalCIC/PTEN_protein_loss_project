@@ -1,15 +1,33 @@
-#| Last change: 12/12/2024
-#| Ivana Rondon-Lorefice
-
 ################################################################################
-#####             ENRICHMENT ANALYSIS OF MODULES DE FROM WGCNA             #####                        
+#| ENRICHMENT ANALYSIS OF WGCNA MODULES AND DEGs ASSOCIATED WITH PTEN LOSS                             
 ################################################################################
-
-#| We have detected two modules highly correlated with the loss of PTEN protein
-#| (purple and green). Enrichment analysis in this scripts focuses mostly in genes
-#| contained in this modules and their intersection with DEGs. Enrichment analysis
-#| was performed using the gprofiler2 library
-
+#| Date: 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#|
+#| Description:
+#| This script performs enrichment analyses on WGCNA modules significantly 
+#| associated with PTEN protein loss (purple and green). It integrates 
+#| differential expression results (DEGs) and module membership to identify 
+#| functionally relevant pathways, regulators, and biological processes.
+#|
+#| Workflow:
+#|   1) Load WGCNA module assignments, DEGs, normalized counts, and sample traits.  
+#|   2) Calculate the overlap (Jaccard index) between DEGs and modules.  
+#|   3) Perform enrichment analysis (gprofiler2) for selected modules (purple, green) 
+#|      and their DEG intersections across databases (GO, KEGG, Reactome, TF, HPA).  
+#|   4) Visualize enrichment results (bubble plots, dot plots).  
+#|   5) Score module signatures at the single-cell level using UCell (on annotated scRNA-seq).  
+#|   6) Compare gene expression (log2 normalized counts) between PTEN loss vs presence 
+#|      samples within modules.  
+#|   7) Generate heatmaps of DEGs and enriched gene sets (ComplexHeatmap).  
+#|
+#| Outputs:
+#|   - Jaccard index plots (module-DEG overlap).  
+#|   - Enrichment plots for purple and green modules (all terms, REAC, KEGG, TF, HPA).  
+#|   - DEG intersection signatures (tables and enrichment maps).  
+#|   - UMAP and violin plots showing module signatures in single-cell data.  
+#|   - Boxplots comparing module DEG expression by PTEN status.  
+#|   - Heatmaps of module DEGs and ECM-related genes.  
 ################################################################################
 
 
