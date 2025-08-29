@@ -22,6 +22,8 @@ Analysis of the bulk RNA-seq data for Human and Mice are inside the folder **"Bu
 5. **"5_Celltype_xCell.R"** (Human)  
    - **xCell**-based deconvolution analysis of bulk RNA-seq data to infer 64 distinct cell types in the clinical samples.
 
+6. **"6_Gene_Fusion_Analysis"** (Human)  
+   - Identification of candidate gene fusions from RNA-Seq data using STAR-Fusion, with downstream quality assessment, refinement, and correction using FusionInspector to reduce false positives.
 
 The analysis scripts for single-cell RNA-seq data are located in the "Single-cell" folder, organized as follows:
 
