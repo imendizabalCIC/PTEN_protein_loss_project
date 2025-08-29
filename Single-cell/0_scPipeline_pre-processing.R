@@ -1,5 +1,33 @@
-#| Last change: 12/12/2024
-#| Saioa Garcia-Longarte
+####################################################################
+#| Date: 12/12/2024
+#| Author: Saioa Garcia Longarte
+#|
+#| Description:
+#| This script prepares Chen PT single-cell RNA-seq data for integration and 
+#| comparison across samples. It performs initial preprocessing, normalization, 
+#| and visualization both with and without dataset integration.  
+#|
+#| Workflow:
+#|   1) Load individual Seurat objects per sample after QC.  
+#|   2) Merge samples into a combined object for joint analysis.  
+#|   3) Apply two preprocessing strategies:  
+#|        - Norm_Feature_Scale (LogNormalize + FindVariableFeatures + ScaleData).  
+#|        - SCTransform (vst-based normalization, variance stabilization).  
+#|   4) For SCTransform objects, run PCA, UMAP, clustering, and save unsupervised 
+#|      clustering plots per sample.  
+#|   5) Generate non-integrated dimensionality reduction plots: PCA, elbow plot, 
+#|      UMAP by sample and combined.  
+#|   6) Save split objects, non-integrated object, and log file documenting the 
+#|      integration parameters (approach, reduction method, PCs, resolution).  
+#|
+#| Outputs:
+#|   - UMAP plots of each sample (SCT workflow).  
+#|   - PCA and elbow plots (no integration).  
+#|   - UMAP plots before integration (combined and split by sample).  
+#|   - RDS objects: split samples and non-integrated dataset.  
+#|   - Log file with project metadata and parameters.  
+####################################################################
+
 
 setwd("C:/Users/sgarcia/CIC bioGUNE/Arkaitz group - Documentos/Individual folders/Saioa Garcia/Requests/Ivana/Request(2024_11_18) - Chen PT")
 

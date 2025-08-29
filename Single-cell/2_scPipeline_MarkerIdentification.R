@@ -1,10 +1,36 @@
-#| Last change: 12/12/2024
-#| Saioa Garcia-Longarte
 
-setwd("C:/Users/sgarcia/CIC bioGUNE/Arkaitz group - Documentos/Individual folders/Saioa Garcia/Requests/Ivana/Request(2024_11_18) - Chen PT")
-dir.create("4_MarkerIdetification_Figures")
-
-# Process PT data from Chen
+####################################################################
+#| SINGLE CELL MARKER ANNOTATION
+####################################################################
+#| Date: 12/12/2024
+#| Author: Saioa Garcia Longarte
+#|
+#| Description:
+#| This script performs manual cell type annotation of Chen's scRNA-seq prostate 
+#| tumor dataset after integration. It identifies cluster-specific marker genes, 
+#| compares them with canonical lineage markers, and assigns biological labels to 
+#| clusters for downstream analysis.  
+#|
+#| Workflow:
+#|   1) Load integrated Seurat object and project metadata from the log file.  
+#|   2) Run FindAllMarkers to identify cluster-enriched genes.  
+#|   3) Save top markers per cluster (top 15 and top 100).  
+#|   4) Visualize canonical cell type markers via:  
+#|        * DotPlots (RNA expression across clusters)  
+#|        * UMAP FeaturePlots (marker distribution in 2D space)  
+#|        * Violin plots (marker expression by cluster)  
+#|   5) Assign cluster identities based on marker expression (e.g. luminal, T cells, 
+#|      endothelial, macrophages, fibroblasts, mast cells, cycling cells).  
+#|   6) Save annotated Seurat object and generate annotated cluster visualizations 
+#|      (UMAP, PCA, DotPlots).  
+#|
+#| Outputs:
+#|   - Text files with top 15 and top 100 marker genes per cluster.  
+#|   - PDF/PNG plots of canonical markers (DotPlot, FeaturePlot, ViolinPlot).  
+#|   - Annotated UMAP and PCA cluster plots.  
+#|   - Annotated Seurat object saved as `Annotation_Manual_<project>.rds`.  
+#|
+#| Process PT data from Chen
 
 ## General pipeline for single-cell data analysis
 ## Following:
@@ -13,6 +39,8 @@ dir.create("4_MarkerIdetification_Figures")
 ## -  Single-cell RNA-seq data analysis workshop: https://hbctraining.github.io/scRNA-seq_online/schedule/links-to-lessons.html 
 
 ## Definitions of the functions from: https://cloud.r-project.org/web/packages/Seurat/Seurat.pdf (Version 4.1.1 || Date 2022-05-01)
+####################################################################
+
 
 ####################################################################
 ## Libraries
@@ -30,6 +58,9 @@ suppressPackageStartupMessages(require("readxl"))
 ###################################################################
 ## Variable prep
 ###################################################################
+
+setwd("C:/Users/sgarcia/CIC bioGUNE/Arkaitz group - Documentos/Individual folders/Saioa Garcia/Requests/Ivana/Request(2024_11_18) - Chen PT")
+dir.create("4_MarkerIdetification_Figures")
 
 # The variables are stored in the log file from the 2_scPipeline_Integration
 log_file <- read.delim("W:/sgarcia/sc_Chen_all/2_scPipeline_Integration_13052022_LOG.log", header = TRUE)

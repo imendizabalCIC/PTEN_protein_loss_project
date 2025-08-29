@@ -1,14 +1,37 @@
-#| Last change: 12/12/2024
-#| Ivana Rondon-Lorefice
-
-
 ################################################################################
 #|           MuSiC for BulkRNAseq and single-cell data
 ################################################################################
-
-#| Bulk input data = Raw counts
-#| Single cell data = RNA assay 
-
+#| Date: 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#| 
+#| Description:
+#| This script applies the MuSiC framework to deconvolve bulk RNA-seq datasets 
+#| (Basurto human cohort and AC-12 mouse model) using Chen et al.'s prostate tumor 
+#| single-cell RNA-seq dataset as reference. The analysis estimates cell type 
+#| proportions in bulk samples and compares them across PTEN statuses or 
+#| experimental conditions.  
+#|
+#| Workflow:
+#|   1) Load and preprocess bulk RNA-seq data:  
+#|        * Basurto human cohort.  
+#|        * AC-12 mouse RNA-seq (map mouse -> human orthologs).  
+#|   2) Load annotated scRNA-seq reference (Chen localized tumors) and prepare as 
+#|      a SingleCellExperiment object (RNA assay).  
+#|   3) Run MuSiC to estimate cell type proportions in bulk samples using reference 
+#|      cluster annotations (luminal, T cells, macrophages, fibroblasts, endothelial, 
+#|      mast cells, cycling).  
+#|   4) Stratify bulk samples by PTEN status:  
+#|        * Human Basurto cohort -> PTEN loss vs PTEN presence.  
+#|        * Mouse AC-12 model -> KO vs WT at 3 months and 6 months.  
+#|   5) Statistical comparison of estimated cell type proportions between groups 
+#|      (boxplots with jittered points, Wilcoxon test p-values).  
+#|
+#| Outputs:
+#|   - Normalized and filtered bulk RNA-seq matrices (human + mouse).  
+#|   - Estimated cell type proportions for each bulk sample.  
+#|   - Boxplots of cell type proportions by PTEN status (Basurto cohort).  
+#|   - Boxplots of cell type proportions by genotype and timepoint (AC-12 mouse).  
+#|   - PDF/PNG figures for publication-ready visualization.  
 ################################################################################
 
 
@@ -80,13 +103,6 @@ counts_data <- aggregate(counts_data, list(by = counts_data$gene_name), mean)
 rownames(counts_data) <- counts_data$by
 counts_data <- counts_data[,datTraits$AC.basurto]
 counts_data <- round(counts_data)
-
-dds <- DESeqDataSetFromMatrix(countData = counts_data, colData = datTraits, design = ~ 1)
-dds <- estimateSizeFactors(dds)
-
-counts_data_normalized <- counts(dds, normalized=TRUE)
-counts_data_normalized <- log(counts_data_normalized + 1, base =2)
-counts_data_normalized <- data.frame(counts_data_normalized)
 
 #| PTEN loss
 counts_data_PTEN_loss <- counts_data[, datTraits$AC.basurto[which(datTraits$PTEN_status == "PTEN loss")]]
@@ -192,35 +208,24 @@ counts_data_human_mouse <- counts_data_human_mouse[, samples]
 counts_data_human_mouse <- as.data.frame(counts_data_human_mouse)
 counts_data_human_mouse<-round(counts_data_human_mouse)
 
-#| Normalization
-dds <- DESeqDataSetFromMatrix(countData = counts_data_human_mouse, colData = sample_info_mouse, design = ~ 1)
-dds <- estimateSizeFactors(dds)
-counts_data_human_mouse_normalized <- counts(dds, normalized=TRUE)
-counts_data_human_mouse_normalized <- log(counts_data_human_mouse_normalized + 1, base =2)
-counts_data_human_mouse_normalized <- data.frame(counts_data_human_mouse_normalized)
-
-#| Checking the same order
-any(colnames(counts_data_human_mouse_normalized) == rownames(sample_info_mouse))
-
-
 ####################| KO3 VS WT3
-counts_data_KO3 <- counts_data_human_mouse_normalized[, sample_info$sample[which(sample_info$condition == "KO3")]]
-counts_data_WT3 <- counts_data_human_mouse_normalized[, sample_info$sample[which(sample_info$condition == "WT3")]]
+counts_data_KO3 <- counts_data_human_mouse[, sample_info$sample[which(sample_info$condition == "KO3")]]
+counts_data_WT3 <- counts_data_human_mouse[, sample_info$sample[which(sample_info$condition == "WT3")]]
 
 counts_data_KO3 <- as.matrix(counts_data_KO3)
 counts_data_WT3 <- as.matrix(counts_data_WT3)
 
-counts_data_KO3_WT3 <- as.matrix(counts_data_human_mouse_normalized[,sample_info$sample[which(sample_info$month == "3")]])
+counts_data_KO3_WT3 <- as.matrix(counts_data_human_mouse[,sample_info$sample[which(sample_info$month == "3")]])
 
 
 ####################| KO6 VS WT6
-counts_data_KO6 <- counts_data_human_mouse_normalized[, sample_info$sample[which(sample_info$condition == "KO6")]]
-counts_data_WT6 <- counts_data_human_mouse_normalized[, sample_info$sample[which(sample_info$condition == "WT6")]]
+counts_data_KO6 <- counts_data_human_mouse[, sample_info$sample[which(sample_info$condition == "KO6")]]
+counts_data_WT6 <- counts_data_human_mouse[, sample_info$sample[which(sample_info$condition == "WT6")]]
 
 counts_data_KO6 <- as.matrix(counts_data_KO6)
 counts_data_WT6 <- as.matrix(counts_data_WT6)
 
-counts_data_KO6_WT6 <- as.matrix(counts_data_human_mouse_normalized[,sample_info$sample[which(sample_info$month == "6")]])
+counts_data_KO6_WT6 <- as.matrix(counts_data_human_mouse[,sample_info$sample[which(sample_info$month == "6")]])
 
 ################################################################################
 

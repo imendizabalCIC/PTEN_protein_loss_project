@@ -1,5 +1,35 @@
-#| Last change: 12/12/2024
-#| Saioa Garcia-Longarte
+###################################################################
+#| SINGLE CELL DATA INTEGRATION
+###################################################################
+#| Date: 12/12/2024
+#| Author: Saioa Garcia Longarte
+#|
+#| Description:
+#| This script integrates scRNA-seq datasets using Seurat, harmonizing batch effects 
+#| while preserving biological variation. It supports both standard (LogNormalize + scaling) 
+#| and SCTransform-based workflows.
+#|
+#| Workflow:
+#|   1) Select top 3000 variable genes across datasets for integration.
+#|   2) Build integration anchors using CCA or RPCA (for Norm_Feature_Scale) 
+#|      or SCT-based anchors (for SCT approach).
+#|   3) Integrate datasets into a unified Seurat object.
+#|   4) Combine doublet/singlet annotations (DF) and visualize distributions
+#|      across samples, phenotypes, and clusters.
+#|   5) Perform linear dimensionality reduction (PCA, UMAP) on integrated data.
+#|   6) Explore elbow plot to guide number of PCs for clustering.
+#|   7) Cluster cells at multiple resolutions and assign cluster identities.
+#|   8) Visualize UMAP embeddings split by sample, phenotype, DF, and metadata.
+#|   9) Assess potential technical variation (UMIs, features, ribo/mito %).
+#|  10) Explore PCs driving clusters, cell cycle scores, and DF proportions.
+#|
+#| Outputs:
+#|   - Barplots of DF distributions (by sample, phenotype, clusters).
+#|   - PCA and UMAP plots (colored by sample, pheno, DF, clusters).
+#|   - Elbow plot to select PCs.
+#|   - Cluster distribution tables and visualizations.
+#|   - Saved integrated Seurat object for downstream analyses.
+###################################################################
 
 ###################################################################
 ## 2. Integration

@@ -1,36 +1,33 @@
-#| Last change: 12/12/2024
-#| Ivana Rondon-Lorefice
-
 
 ################################################################################
-#| UCell                 
+#| MODULE PROJECTION OF HUMAN AND MURINE DATA INTO SINGLE-CELL DATA
 ################################################################################
-
+#| Date: 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#| 
+#| Description:
+#| This script projects WGCNA-derived gene signatures from human (AC-45) and mouse
+#| (AC-12) prostate cancer RNA-seq cohorts onto Chen's scRNA-seq dataset using UCell.
+#| UCell computes robust and scalable single-cell signature scores, enabling the
+#| visualization of module activity at single-cell resolution.
+#|
+#| Workflow:
+#|   1) Load processed Chen scRNA-seq data (localized samples only, SCT-integrated).
+#|   2) Import WGCNA module DEGs (purple, green, yellow) and curated signatures 
+#|      (e.g. PI3K-AKT-mTOR pathway).
+#|   3) For the mouse cohort: map mouse gene names to their human orthologs.
+#|   4) Build a list of gene signatures to test.
+#|   5) Use AddModuleScore_UCell to compute UCell scores for each signature.
+#|   6) Visualize signature activity by:
+#|        * UMAP feature plots (per module).
+#|        * Violin plots (by cluster, by sample).
+#|
+#| Outputs:
+#|   - UMAP plots showing module DEG activity in single cells (purple, green, yellow).
+#|   - Violin plots of PI3K-AKT-mTOR signature across clusters and samples.
+#|   - PDF figures stored under `Results/Images/UMAPPlots` and `Results/Images/VlnPlots`.
+#|
 #| Single cell data from Chen: https://www.nature.com/articles/s41556-020-00613-6
-#| This contains 13 samples (8 localized)
-#| After filtering localized samples, I have integrated the data using these tutorial: 
-#|      https://satijalab.org/seurat/articles/sctransform_vignette.html 
-#|      https://satijalab.org/seurat/articles/sctransform_v2_vignette
-#|      https://satijalab.org/seurat/articles/integration_introduction.html
-#| In the integration, I have applied SCTransform independently. Then followed 
-#| the functions pre-defined for SC-data integration. However, take into account
-#| the comments from satija about the RNA Assay vs SCTAssay for visualization: 
-#|      https://github.com/satijalab/seurat/issues/4082
-
-#| When creating the annotations, I have to use the RNA assay instead of the integrated
-#| assay, because in this one, there are a number of feature selected for optimal
-#| visualization
-
-#| UCell: Robust and scalable single-cell gene signature scoring
-
-#| To install: https://github.com/carmonalab/UCell
-
-#| Use of UCell and downloading a single-cell data from the GEO repository. 
-#| For Chen: GSE141445 
-
-#| https://carmonalab.github.io/UCell_demo/UCell_matrix_vignette.html
-#| https://carmonalab.github.io/UCell_demo/UCell_Seurat_vignette.html
-
 ################################################################################
 
 
