@@ -1,21 +1,33 @@
-#| Last change: 12/12/2024
-#| Ivana Rondon-Lorefice
-
 ################################################################################
-###################### QUANTIFICATION OF PTEN BY IHC  ##########################
+#| QUANTIFICATION AND BINARIZATION OF PTEN
 ################################################################################
-
-#| Levels of PTEN intensity were measured by immunohistochemistry analysis. A pathologist measured
-#| different intensities for the appearance of PTEN in the tumor tissue of 198 
-#| patients. Here I have processed this data and I have added it to the sample_info 
-#| table
-
-#| Moreover, given that the assessment of PTEN represents a continues value (H-score)
-#| we explore a threshold of this value, to binary classify PTEN as presence vs intact.
-#| How the H-score was computed? see: http://e-immunohistochemistry.info/web/H-score.htm
-
-#| PI3K-AKT-mTOR signature was obtained from: https://pubmed.ncbi.nlm.nih.gov/26771021/ 
-
+#| Date: 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#|
+#| Description:
+#| This script integrates PTEN immunohistochemistry (IHC) data with RNA-seq 
+#| sample information for the AC-45_RNAseq-FFPE cohort. PTEN staining intensities 
+#| (H-score) were obtained from a pathologist's evaluation of tumor tissue in 197 
+#| patients and merged into the sample_info table.
+#|
+#| Workflow:
+#|   1) Process raw IHC assessment data (TMA matrix + PTEN sheet) and compute 
+#|      H-scores using:  
+#|        H-score = (0 X %negative) + (1 X %weak) + (2 X %moderate) + (3 X %strong).  
+#|   2) Merge H-scores and % tumor values with clinical sample_info metadata.  
+#|   3) Explore binary classification thresholds (cut-offs: 0, 10, 20, 30, 200) 
+#|      to define PTEN protein status as "presence" vs "intact".  
+#|   4) Correlate thresholds with PI3K-AKT-mTOR pathway expression signature 
+#|      using Wilcoxon tests.  
+#|   5) Generate visualizations:  
+#|        - Scatterplots of threshold p-values vs signature expression.  
+#|        - Boxplots of PI3K-AKT-mTOR expression across PTEN cut-offs.  
+#|        - Barplots of sample proportions across thresholds.  
+#|   6) Save updated sample_info with H-scores and PTEN classification.  
+#|
+#| Outputs:
+#|   - Updated sample_info_extracted.txt including PTEN H-scores and thresholds.  
+#|   - Boxplots, scatterplots, and barplots summarizing PTEN threshold analysis.  
 ################################################################################
 
 
@@ -273,8 +285,6 @@ ggplot(sample_info_extracted[which(!is.na(sample_info_extracted$H_score_cut_30))
   xlab("PTEN protein status")
 ggsave("Results/Box_plots/H_score_cut_30_PI3K-AKT-mTOR_PTEN_intact_presence.pdf", height = 4.2, width = 3.9)
 
-
-
 #| What cut it is more suitable to use? H-SCORE AND SAMPLE PROPORTION
 fraction_samples_PTEN_presence_intact <- data.frame(group =c("PTEN presence", "PTEN intact", "PTEN presence", "PTEN intact", "PTEN presence", "PTEN intact", "PTEN presence", "PTEN intact"),
                                                 Samples = c(length(sample_info_extracted$H_score_cut_0[which(!is.na(sample_info_extracted$H_score_cut_0) & sample_info_extracted$H_score_cut_0== "PTEN presence")])/length(sample_info_extracted$H_score_cut_0[which(!is.na(sample_info_extracted$H_score_cut_0))]),
@@ -297,15 +307,12 @@ ggplot(fraction_samples_PTEN_presence_intact, aes(x =cut, y = Samples, fill =gro
   geom_text(aes(label=round),position="stack",vjust=1, colour = "white")#+ 
   #ggtitle("Fraction of samples for PTEN presence and PTEN intact changes depending on the \n H-score cut-off (147 PCa samples)")
 ggsave("Results/Bar_plots/Fraction_samples_PTEN_presence_PTEN_intact_Different_H-score_cutoff_147_PCa_samples.pdf", heigh= 4.5, width = 5.5)
-
-
 ################################################################################
 
 
 ################################################################################
 #| SAVING SAMPLE INFORMATION WITH H-SCORE VALUES
 ################################################################################
-
 write.table(sample_info_extracted, "Results/Sample_info_table/sample_info_extracted.txt", sep ="\t",row.names=T)
 ################################################################################
 
