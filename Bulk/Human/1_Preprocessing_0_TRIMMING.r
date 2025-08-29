@@ -1,23 +1,22 @@
 #/opt/R/R-4.1.2/bin/R
 
-#| Last change: 12/12/2024
-#| Ivana Rondon
-
 ###############################################################################
-####### THIS CODES CREATES A SCRIPT FOR EACH FASTQ FILE AND SUMIT JOBS ########
-####### TO PERFORM TRIMMING ON THE FASTQ FILES OF THE SECOND READ      ########
+#| THIS CODES CREATES A SCRIPT FOR EACH FASTQ FILE AND SUMIT JOBS 
+#| TO PERFORM TRIMMING ON THE FASTQ FILES OF THE SECOND READ      
 ###############################################################################
-
-#| This script creates and execute 198 jobs for trimming corresponding sequences 
-
+#| Date: 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#|
+#| This script creates and execute 197 jobs for trimming corresponding sequences 
+#|
 #| The raw data analyzed is contained in the folder /vols/GPArkaitz_bigdata/DATA_shared/AC-45_RNAseq-FFPE/FASTQs/
-#| This data is the RNAseq from the prostate of 198 patients from Basurto's hospital
+#| This data is the RNAseq from the prostate of 197 patients from Basurto's hospital
 #| that was extracted after detecting PCa.
-
+#|
 #| The library used is SMART SMARTer(a) Stranded Total RNASeq Kit v2 - Pico Input 
 #| Mammalian (Cat. Nos. 634411, 634412, 634413, 63441) in an Illumina NovaSeq 
 #| intrument. The output is paired-end sequencing.
-
+#|
 #| The preliminar instructions from the sequencer are:
 #|   1) When performing paired-end sequencing, the first three nucleotides of 
 #|   the second sequencing read (Read 2) are derived from the Pico v2 SMART Adapter.
@@ -26,7 +25,7 @@
 #|   3) Conclusions of the trimming of the Read 1: It is necessary to trim the 3 
 #|   nucleotides of Read 1 adjacent of the 3' adapter (because the inserts contains
 #|   a size < 150bps
-
+#|
 #| In summary: This scripts creates a .sh file and then it is launched to the job 
 #| executor in indar to:
 #|   1) Cut the TruSeq CD illumina adaptors from the fastq files
@@ -36,7 +35,7 @@
 #|   1) Perform quality trimming with a cutoff of 10
 #|   2) Minimum length size of 20bp. This is chosen based on the distribution of 
 #| length for our insert.
-
+#|
 #| From the cutadapt documentation (paired-end sequence)
 #|     cutadapt [options] -o output 1 -p output2 input1 input2
 #| [options]: 
@@ -46,7 +45,6 @@
 #|     -q: Defines a threshold of the quality for each sequence
 #|     -u: Cut a specific number of nucleotides of Read 1
 #|     -U: Cut a specific number of nucleotides of Read 2
-
 ###############################################################################
 
 

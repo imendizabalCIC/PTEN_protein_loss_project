@@ -1,12 +1,28 @@
-#| Last change: 12/12/2024
-#| Ivana Rondon
-
 ###############################################################################
-############### ANALYSIS OF THE RESULTS OBTAINED WITH STAR ####################
+#| STAR MAPPING RESULTS SUMMARY 
 ###############################################################################
-
-#| This script creates a dataframe that summarizes the mapping process results,  
-#| such as errors in the process, mapped length, percentage of unique mapping, etc...
+#| Date: 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#|
+#| Description:
+#| This script summarizes the results of RNA-seq read alignment performed with STAR 
+#| for the AC-45_RNAseq-FFPE project. It parses both SLURM log files and STAR 
+#| output reports to build a summary of mapping quality.
+#|
+#| Main tasks:
+#|   - Check each SLURM output file to confirm whether the mapping job finished successfully.
+#|   - Parse STARLog.final.out files to extract key metrics such as:
+#|        * Read length and total number of reads
+#|        * Percentage of uniquely mapped reads
+#|        * Average mapped read length
+#|        * Mismatch rates
+#|        * Rates of multimapping and unmapped reads (by reason)
+#|   - Store all results in a single dataframe (`mapping_summary`).
+#|   - Generate exploratory boxplots to visualize mapping quality across samples.
+#|
+#| Output:
+#|   - A summary dataframe of STAR mapping statistics per sample.
+#|   - Boxplots showing the distribution of mapping and unmapped read percentages.
 ###############################################################################
 
 
@@ -26,7 +42,7 @@ Samples <- list.files(path = "X:/DATA_shared/AC-45_RNAseq-FFPE/FASTQs", pattern 
 Samples <- gsub("_1.fastq.gz", "", Samples)
 slurm_number <- Samples
 
-# Creating a dataframe whose first column is the samples names (from Samples)
+#| Creating a dataframe whose first column is the samples names (from Samples)
 mapping_summary <- data.frame(Samples)
 
 ################################################################################
@@ -39,18 +55,18 @@ mapping_summary <- data.frame(Samples)
 #| This loop runs through the numbers of the slurm IDs. In this files we will see if the mapping successfully finished.
 for(i in slurm_number){
   
-  # I read the slurm.out file
+  #| I read the slurm.out file
   slurm <- read.table(paste("X:/irondon/Project_AC-45_RNAseq-FFPE/RNAseq/2_STEP_STAR/", i, ".out", sep = ""), sep = "\t")
   
-  # I take the name of the sample from the slurm.out file to know where to save the data in the df
+  #| I take the name of the sample from the slurm.out file to know where to save the data in the df
   name <- slurm[9,]
   name <- gsub("Job name: ", "", name)
   
-  # I look for the string "finished successfully" in the column 27. success = TRUE if I find it
+  #| I look for the string "finished successfully" in the column 27. success = TRUE if I find it
   ending <- slurm[27,]
   success <- grepl("finished successfully", ending)
   
-  # If success = TRUE, I write in the df "Finished successfully". If not, I assume there has been some type of Error.
+  #| If success = TRUE, I write in the df "Finished successfully". If not, I assume there has been some type of Error.
   if(success){
     mapping_summary$Mapping_Process[mapping_summary$Samples == name] <- "Finished successfully"
   }else{
@@ -68,10 +84,10 @@ for(i in slurm_number){
 #| For this loop I go through the Samples character list
 for(k in 1:length(Samples)){
   
-  # I read the STARLog.final.out. I use read.delim since read.table doesn't work in this case
+  #| I read the STARLog.final.out. I use read.delim since read.table doesn't work in this case
   results <- read.delim(paste("X:/irondon/Project_AC-45_RNAseq-FFPE/RNAseq/2_STEP_STAR/Outdir_STAR/", Samples[k], "_STARLog.final.out", sep = ""), sep = "\t")
   
-  # Now I take each cell with useful information and create a column in the df
+  #| Now I take each cell with useful information and create a column in the df
   mapping_summary$Read_Length[mapping_summary$Samples == Samples[k]] <- results[5,2]
   mapping_summary$Read_Number[mapping_summary$Samples == Samples[k]] <- results[7,2]
   mapping_summary$Mapped_Unique[mapping_summary$Samples == Samples[k]] <- results[8,2]

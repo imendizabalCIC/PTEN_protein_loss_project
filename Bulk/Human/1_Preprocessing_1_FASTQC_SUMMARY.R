@@ -1,17 +1,25 @@
-#| Last change: 12/12/2024
-#| Ivana Rondon
-
 ################################################################################
-#                   SUMMARY OF THE FASTQC ANALYSIS
+#| SUMMARY OF THE FASTQC ANALYSIS
 ################################################################################
-
-# Once the fastqc software is applied to the fastq files obtained from the RNASeq
-#we need to summarize the results obtained on each files (the zip files) regarding
-#sequence quality, adapter content, etc..
-
-# This script is written to evaluate the results from the FastQC applied to the
-#AC-45_RNAseq-FFPE data
-
+#| Date 12/12/2024
+#| Author: Ivana Rondon Lorefice
+#|
+#| Description:
+#| This script summarizes and visualizes the results of FastQC quality control 
+#| applied to RNA-Seq FASTQ files from the AC-45_RNAseq-FFPE project. 
+#| 
+#| Main tasks:
+#|   - Extract PASS/WARN/FAIL metrics from FastQC output (zipped reports).
+#|   - Compile results across all samples into a single summary table.
+#|   - Generate an overview plot (stacked bar chart) showing the proportion 
+#|     of PASS/WARN/FAIL for each QC module across samples.
+#|   - Save the summary plot as a PDF for reporting and interpretation.
+#|
+#| Notes:
+#|   - Certain modules (e.g. per-base sequence content, sequence duplication) 
+#|     are expected to fail/warn in RNA-Seq due to biases from library prep.
+#|   - Interpretation of results should focus on contamination (GC content, 
+#|     overrepresented sequences) and library complexity.
 ################################################################################
 
 
@@ -27,12 +35,12 @@ suppressMessages(library(ggplot2))
 workingDir = "X:/irondon/Project_AC-45_RNAseq-FFPE/RNAseq/1_STEP_FASTQCs/"
 setwd(workingDir)
 
-# List with the names of the files we will process, only keeping the sample name.
+#| List with the names of the files we will process, only keeping the sample name.
 Samples <- list.files(path = "X:/DATA_shared/AC-45_RNAseq-FFPE/FASTQs", pattern = "*.fastq")
 Samples <- gsub(".fastq.gz", "", Samples)
 Samples <- sort(Samples)
 
-# Empty dataframe to load all data
+#| Empty dataframe to load all data
 fastqc_summary <- data.frame()
 
 ################################################################################
