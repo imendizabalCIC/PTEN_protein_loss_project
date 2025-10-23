@@ -40,3 +40,7 @@ The analysis scripts for single-cell RNA-seq data are located in the "Single-cel
    - Prostate-specific cell type deconvolution analysis of the clinical and murine data with a single-cell data from 8 localized prostate cancer samples from Chen et al. (Nature, 2021) using the **MuSiC** package.
 
 For details on package versions, please refer to the manuscript.
+
+## Authors
+- Ivana Rondon-Lorefice – Original repository creator and main developer  
+- Isabel Mendizabal – Project supervisor 
