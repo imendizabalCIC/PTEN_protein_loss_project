@@ -1,4 +1,4 @@
-# Exploring PTEN Loss in Prostate Cancer Through Bulk and Single-Cell Transcriptome Analysis
+# Transcriptional network analysis of PTEN-protein-deficient prostate tumors reveals robust stromal reprogramming and signs of senescent paracrine communication
 
 Analysis of the bulk RNA-seq data for Human and Mice are inside the folder **"Bulk"**, where scripts labeled with:
 
