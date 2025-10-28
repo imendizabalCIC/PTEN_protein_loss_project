@@ -41,6 +41,3 @@ The analysis scripts for single-cell RNA-seq data are located in the "Single-cel
 
 For details on package versions, please refer to the manuscript.
 
-## Authors
-- Ivana Rondon-Lorefice – Original repository creator and main developer  
-- Isabel Mendizabal – Project supervisor 
