@@ -1,4 +1,5 @@
 # Transcriptional network analysis of PTEN-protein-deficient prostate tumors reveals robust stromal reprogramming and signs of senescent paracrine communication
+Publication DOI: https://doi.org/10.1002/1878-0261.70164
 
 Analysis of the bulk RNA-seq data for Human and Mice are inside the folder **"Bulk"**, where scripts labeled with:
 
